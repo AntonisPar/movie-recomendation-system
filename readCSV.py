@@ -24,8 +24,7 @@ try:
             res = es.index( index="movies", id=lineNum, body=docsData )
     es.indices.refresh(index="movies") 
 
-except IOError:
-
+except IOError: 
     print("Please Move The CSV To The Current Directory Or Specify The Path To The csvFile Variable")
     exit() 
 
