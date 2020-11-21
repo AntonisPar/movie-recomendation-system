@@ -5,18 +5,25 @@ import json
 
 es = Elasticsearch() #CONNECT TO ELASTICSEARCH.
 es.indices.refresh(index="movies") 
-myQuery = str(input())
+url = 'http://localhost:9200/movies/_doc/_search'
 
 query = {
-    'query': {
-        'match': {
+    "query": {
+        "match": {
             # search against the 'title' field
-            'query': myQuery
+            'title': str(input())
         }
     }
-}
-print(es.search(index='movies',body=query ,size=1000))
+} 
 
+def search(myQuery):
+    res = requests.get(url, data=json.dumps(query), headers={'Content-Type': 'application/json'}) 
+    search_hits = json.loads(res.text)['hits']['hits']
+    print('Relevance Score\t Title')
+    for hit in search_hits:
+        print(hit['_score'],'\t',hit['_source']['title'] )
+
+search(query)
 
 #print("Would you like to upload the Data to Elasticsearch? [y/N]")
 #
