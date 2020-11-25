@@ -40,19 +40,13 @@ def search():
         rating_by_movie = df.loc[( df['movieId'] == es_movie_id )] 
         es_bm_score     = float(hit['_score'])
         es_movie_title  = hit['_source']['title']
-        sum_of_ratings  = 0
-        sum_of_users    = 0
-
-        for idx in rating_by_movie.index:
-            sum_of_ratings = sum_of_ratings + float(rating_by_movie['rating'][idx])
-            sum_of_users = sum_of_users + 1
 
         if es_movie_id in rating_result:
-            score_calc = (0.25 * es_bm_score) + (0.5 * rating_result[es_movie_id]) + (0.25 * (sum_of_ratings/sum_of_users))
+            score_calc = (0.25 * es_bm_score) + (0.5 * rating_result[es_movie_id]) + (0.25 * rating_by_movie['rating'].mean())
             new_score[es_movie_title] = score_calc
 
         else: 
-            score_calc = (0.25 * es_bm_score) + (0.25 * (sum_of_ratings/sum_of_users))
+            score_calc = (0.25 * es_bm_score) + (0.25 * rating_by_movie['rating'].mean())
             new_score[hit['_source']['title']] = score_calc
 
     sorted_results = sorted(new_score.items(), key=lambda x: x[1], reverse=True)
