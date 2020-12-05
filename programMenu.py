@@ -1,5 +1,5 @@
-from readCSV import uploadData
-from search import search
+from uploadData import uploadData
+from simpleSearch import search
 
 #SOME SIMPLE MENU FUNCTIONS TO MAKE EXECUTION EASIER.
 

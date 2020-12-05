@@ -1,6 +1,5 @@
 #IMPORTING MODULES.
 
-from readCSV import uploadData
 from elasticsearch import helpers, Elasticsearch
 import requests, json
 
