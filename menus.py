@@ -1,6 +1,7 @@
 from readCSV import uploadData
 from search import search
 
+#SOME SIMPLE MENU FUNCTIONS TO MAKE EXECUTION EASIER.
 
 def dataMenu():
     print("Would you like to upload the Data to Elasticsearch? [y/N]", end=' ')

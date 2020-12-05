@@ -25,10 +25,10 @@ es.indices.create(index='movies', ignore=400, body=esSettings) #CREATE THE INDEX
 
 def uploadData():
     try:
-        with open(csvFile, encoding='utf-8') as csvData: 
-            csvReader = csv.DictReader(csvData) 
-            for docsData in csvReader: 
-                lineNum = csvReader.line_num - 1
+        with open(csvFile, encoding='utf-8') as csv_data: 
+            csv_reader = csv.DictReader(csv_data) 
+            for docsData in csv_reader: 
+                lineNum = csv_reader.line_num - 1
                 res = es.index( index="movies", id=lineNum, body=docsData )
         print("Data uploaded successfully")
     except IOError: 

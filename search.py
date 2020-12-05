@@ -30,9 +30,9 @@ def search_query():
 #SEARCH FUNCTION.
 
 def search():
-    my_query = search_query() #INSERT TITLE
-    results = requests.get(url, data=json.dumps(my_query), headers={'Content-Type': 'application/json'}) #REQUEST FOR THE SEARCH RESULTS
-    search_hits = json.loads(results.text)['hits']['hits'] #KIND OF FILTERING THE DATA FROM THE JSON THAT GET RESPONED
+    my_query = search_query() #INSERT TITLE.
+    results = requests.get(url, data=json.dumps(my_query), headers={'Content-Type': 'application/json'}) #REQUEST FOR THE SEARCH RESULTS.
+    search_hits = json.loads(results.text)['hits']['hits'] #KIND OF FILTERING THE DATA FROM THE JSON THAT GET RESPONED.
     print('Relevance Score\t Title')
     for hit in search_hits:
         print(hit['_score'],'\t',hit['_source']['title'] )
