@@ -9,7 +9,7 @@ es.indices.refresh(index="movies")
 url = 'http://localhost:9200/movies/_doc/_search'
 df = pd.read_csv('ratings.csv')
 
-def search():
+def custom_search():
 
     print("Please insert your User ID: ")
     uID = int(input())
@@ -55,4 +55,3 @@ def search():
     for i in sorted_results:
         print("%.6f" % i[1],'\t' ,i[0])
 
-search() 
