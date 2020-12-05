@@ -23,17 +23,16 @@ es.indices.create(index='movies', ignore=400, body=esSettings) #CREATE THE INDEX
 
 #CHECK IF THE FILE EXISTS AND IF IS TRUE IMPORT THE DATA TO ELASTICSEARCH.
 
-def uploadData(es):
+def uploadData():
     try:
         with open(csvFile, encoding='utf-8') as csvData: 
             csvReader = csv.DictReader(csvData) 
             for docsData in csvReader: 
                 lineNum = csvReader.line_num - 1
-                res = es.index( index="movies", id=lineNum, body=docsData ) 
+                res = es.index( index="movies", id=lineNum, body=docsData )
+        print("Data uploaded successfully")
     except IOError: 
         print("Please Move The CSV To The Current Directory Or Specify The Path To The csvFile Variable")
         exit() 
-
-uploadData(es)
 
 #END SECTION.  
