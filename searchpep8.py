@@ -49,6 +49,7 @@ def search():
             new_score[es_movie_title] = score_calc
 
         else:
+            print( es_bm_score ,  rating_by_movie['rating'].mean() )
             score_calc = (0.25 * es_bm_score) + \
                 (0.25 * rating_by_movie['rating'].mean())
             new_score[hit['_source']['title']] = score_calc
