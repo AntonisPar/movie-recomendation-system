@@ -12,7 +12,6 @@ from progress.bar import FillingCirclesBar
 
 #VARIABLES
 
-es = Elasticsearch()  # CONNECT TO ELASTICSEARCH.
 settings_file = "settings.json" #SPECIFY THE PATH TO SETTINGS FILE.
 csv_file = "movies.csv" # SPECIFY THE PATH TO THE CSV FILE.
 
@@ -46,4 +45,3 @@ def upload_data(es):
     print("Data uploaded successfully") 
 
 #END SECTION.
-upload_data(es)

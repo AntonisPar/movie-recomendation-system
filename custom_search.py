@@ -4,18 +4,14 @@ import pandas as pd
 import requests
 import json
 
-es = Elasticsearch()  # CONNECT TO ELASTICSEARCH.
-es.indices.refresh(index="movies")
-url = 'http://localhost:9200/movies/_doc/_search'
-df = pd.read_csv('ratings.csv')
+def custom_search(es, url):
 
-
-def search():
-
-    print("Please insert your User ID: ")
+    df = pd.read_csv('ratings.csv')
+    es.indices.refresh(index="movies")
+    print("Please insert your User ID: ", end = ' ')
     uID = int(input())
 
-    print("Search for a movie: ")
+    print("Search for a movie: ", end = ' ')
     query = {
         "query": {
             "match": {
@@ -49,7 +45,6 @@ def search():
             new_score[es_movie_title] = score_calc
 
         else:
-            print( es_bm_score ,  rating_by_movie['rating'].mean() )
             score_calc = (0.25 * es_bm_score) + \
                 (0.25 * rating_by_movie['rating'].mean())
             new_score[hit['_source']['title']] = score_calc
@@ -62,4 +57,3 @@ def search():
         print("%.6f" % i[1], '\t', i[0])
 
 
-search()

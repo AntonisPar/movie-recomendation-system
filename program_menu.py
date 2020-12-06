@@ -1,9 +1,15 @@
-from uploadData import uploadData
-from simpleSearch import search
+from upload_data import upload_data
+from simple_search import search
+from custom_search import custom_search
+from elasticsearch import helpers, Elasticsearch
 
 #SOME SIMPLE MENU FUNCTIONS TO MAKE EXECUTION EASIER.
 
-def dataMenu():
+es = Elasticsearch()  # CONNECT TO ELASTICSEARCH.
+url = 'http://localhost:9200/movies/_doc/_search'
+
+
+def data_menu():
     print("Would you like to upload the Data to Elasticsearch? [y/N]", end=' ')
     condition = False
     while condition == False:
@@ -11,18 +17,18 @@ def dataMenu():
         option = str(input()).lower()
         if (option == 'y' or option == 'yes'):
             print("Data will be uploaded\n")
-            uploadData()
+            upload_data(es)
             condition = True
         elif (option == 'n' or option == 'no' or option == ""):
             print("Data will not be uploaded")
             condition = True
         else:
-            print("Please choose y, n or type nothing for the default option: ", end = ' ')
+            print("Please choose y, n or type nothing for the default option: ", end=' ')
 
 
-def searchMenu():
+def search_menu():
     print("Search for a movie: ", end=' ')
-    search()
+    search(es, url)
 
     print("Would you like to search for another movie? [y/N] ", end=' ')
     condition = False
@@ -32,12 +38,56 @@ def searchMenu():
 
         if(option == 'yes' or option == 'y'):
             print("Search for a movie: ", end=' ')
-            search()
+            search(es, url)
             print("Would you like to search for another movie? [y/N]", end=' ')
         elif(option == 'no' or option == 'n' or option == ''):
             condition = True
         else:
             print("Please choose y, n or type nothing for the default option: ", end=' ')
 
-dataMenu()
-searchMenu()
+
+def custom_search_menu():
+
+    custom_search(es, url)
+    print("Would you like to search for another movie? [y/N] ", end=' ')
+
+    condition = False
+    while condition == False:
+        option = str(input()).lower()
+
+        if(option == 'yes' or option == 'y'):
+            custom_search(es, url)
+            print("Would you like to search for another movie? [y/N]", end=' ')
+        elif(option == 'no' or option == 'n' or option == ''):
+            condition = True
+        else:
+            print("Please choose y, n or type nothing for the default option: ", end=' ')
+
+
+def start_menus():
+    data_menu()
+    condition = True
+    while condition == True:
+        print("Would you like to use the simple Search or our Custom Search?")
+        print("[1] Simple Search")
+        print("[2] Custom Search")
+        print("Write the number that belongs to the search you want to use: ", end = ' ') 
+        option = int(input())
+
+        if( option == 1 ):
+            search_menu()
+            print("would you like to choose another option? [y/N]: ", end = ' ') 
+            check = input().lower()
+            if (check == 'yes' or check =='y'):
+                condition = True 
+
+        elif( option == 2 ):
+            custom_search_menu()
+            print("would you like to choose another option? [y/N]: ", end = ' ') 
+            check = input().lower()
+            if (check == 'no' or check == 'n'):
+                condition = False 
+        else: 
+            print("please write (y)es or (n)o", end = ' ')
+
+start_menus()
