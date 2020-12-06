@@ -1,7 +1,12 @@
 #MODULES.
 
+import csv
 import os
+import requests
 import json
+import logging
+import time
+import re
 import os.path
 import pandas as pd
 from elasticsearch import helpers, Elasticsearch
@@ -46,4 +51,3 @@ def upload_data(es):
     print("Data uploaded successfully") 
 
 #END SECTION.
-upload_data(es)
