@@ -71,6 +71,7 @@ def start_menus():
         print("Would you like to use the simple Search or our Custom Search?")
         print("[1] Simple Search")
         print("[2] Custom Search")
+        print("[3] Exit")
         print("Write the number that belongs to the search you want to use: ", end = ' ') 
         option = int(input())
 
@@ -80,14 +81,17 @@ def start_menus():
             check = input().lower()
             if (check == 'yes' or check =='y'):
                 condition = True 
+            elif (check == 'no' or check == 'n' or check == ''):
+                condition = False 
 
         elif( option == 2 ):
             custom_search_menu()
             print("would you like to choose another option? [y/N]: ", end = ' ') 
             check = input().lower()
-            if (check == 'no' or check == 'n'):
+            if (check == 'yes' or check =='y'):
+                condition = True 
+            elif (check == 'no' or check == 'n' or check == ''):
                 condition = False 
-        else: 
-            print("please write (y)es or (n)o", end = ' ')
-
+        elif(option == 3): 
+            condition = False
 start_menus()
