@@ -87,7 +87,8 @@ def unseen_movies(user_id,movie_id,rating_df, mean_df):
 
 #create_mean_file()
 #create_clusters()
-#fill_movies()
+#fill_movies() 
+ratings_df, mean_df = create_clusters()
 var = unseen_movies(1,785,rating_df,mean_df)
 print(var)
 
