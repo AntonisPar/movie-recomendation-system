@@ -1,12 +1,14 @@
 from upload_data import upload_data
 from simple_search import search
 from custom_search import custom_search
+from clusters import *
 from elasticsearch import helpers, Elasticsearch
 
 #SOME SIMPLE MENU FUNCTIONS TO MAKE EXECUTION EASIER.
 
 es = Elasticsearch()  # CONNECT TO ELASTICSEARCH.
 url = 'http://localhost:9200/movies/_doc/_search'
+ratings_with_clusters, mean_with_clusters = create_clusters()
 
 
 def data_menu():
@@ -48,7 +50,7 @@ def search_menu():
 
 def custom_search_menu():
 
-    custom_search(es, url)
+    custom_search(es, url,ratings_with_clusters,mean_with_clusters)
     print("Would you like to search for another movie? [y/N] ", end=' ')
 
     condition = False
@@ -56,7 +58,7 @@ def custom_search_menu():
         option = str(input()).lower()
 
         if(option == 'yes' or option == 'y'):
-            custom_search(es, url)
+            custom_search(es, url,ratings_with_clusters,mean_with_clusters)
             print("Would you like to search for another movie? [y/N]", end=' ')
         elif(option == 'no' or option == 'n' or option == ''):
             condition = True
