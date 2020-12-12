@@ -1,9 +1,7 @@
-import json
-import requests
-import tkinter
-import pandas as pd
+import seaborn as sns
 import numpy as np
 import matplotlib.pyplot as plt
+import pandas as pd
 from sklearn.cluster import KMeans
 from elasticsearch import helpers, Elasticsearch
 
@@ -25,9 +23,8 @@ for idx in unique_genre.index:
         if unique_genre[i][idx] != None:
             genres.add(unique_genre[i][idx])
 
-genres_dict = {}
-for val, item in enumerate(genres):
-    genres_dict[item] = val
+genres = sorted(genres)
+
 #########################################################################
 
 
@@ -40,37 +37,57 @@ def create_mean_file():
     data_file = data_file.assign(genres=data_file.genres.str.split(
         "|")).explode('genres', ignore_index=True)
 
-    mean_file = pd.DataFrame()
+    mean_file = pd.DataFrame(columns=['userId'])
+    for genre in genres:
 
-    for id in range(1, user_ids):
+        mean_file[str(genre)] = 0
+
+    for id in range(1, user_ids+1):
+        per_user_means = {"userId": id}
         for genre in genres:
             genre_per_user = data_file.loc[(data_file['userId'] == id) & (
                 data_file['genres'] == genre)]
             mean = genre_per_user["rating"].mean()
-            temp = pd.DataFrame(
+            per_user_means[str(genre)] = mean
 
-                {
-                    'userId': [id],
-                    'genre': [genre],
-                    'mean': [mean]
+        mean_file = mean_file.append(per_user_means, ignore_index=True)
 
-                }
-
-            )
-            mean_file = pd.concat([mean_file, temp], ignore_index=True)
-
-    mean_file.dropna().to_csv("mean.csv")
+    mean_file.to_csv("newmean.csv", index=False)
 
 
 ###################################################################
 
 def create_clusters():
 
-    mean_file = pd.read_csv('mean.csv')
-    #X,  = make_blobs(n_samples=1000, centers=3, n_features=2)
-    kmean_df = pd.DataFrame(mean_file, columns=['userId', 'mean'])
-    kmeans = KMeans(n_clusters=5)
-    y = kmeans.fit_predict(kmean_df[['userId', 'mean']])
-    kmean_df['Cluster'] = y
-    print(kmean_df)
-    kmean_df.to_csv("clustering.csv")
+    mean_file = pd.read_csv('newmean.csv').fillna(0)
+    ratings_df = pd.read_csv('ratings.csv')
+    y = KMeans()
+    mean_file['clusters'] = y.fit_predict(mean_file[genres[1:]])
+    for id in range(1,user_ids + 1): 
+        ratings_df.loc[ratings_df['userId'] == id, 'cluster'] = int(mean_file['clusters'].loc[mean_file['userId'] == id ])
+
+    return ratings_df, mean_file
+
+def unseen_movies(user_id,movie_id,rating_df, mean_df):
+    cluster_movies = set()
+    user_movies = set()
+    user_cluster = mean_df.loc[mean_df['userId'] == user_id , ['clusters']].values[0]
+    movies_in_cluster = rating_df.loc[rating_df['cluster'] == float(user_cluster) , ['movieId']]
+    movies_per_user = rating_df.loc[rating_df['userId'] == user_id, ['movieId']]
+    for idx in movies_in_cluster.index:
+        cluster_movies.add(movies_in_cluster['movieId'][idx]) 
+    for idx in movies_per_user.index:
+        user_movies.add(movies_in_cluster['movieId'][idx]) 
+    if movie_id in user_movies:
+        return float(rating_df.loc[(rating_df['userId'] == user_id) & (rating_df['movieId'] == movie_id ), ['rating']].values[0])
+    elif (movie_id not in user_movies) and (movie_id in cluster_movies):
+        return float(rating_df.loc[(rating_df['cluster'] == float(user_cluster)) & (rating_df['movieId'] == movie_id ), ['rating']].mean())
+    else: return 0 
+
+
+#create_mean_file()
+#create_clusters()
+#fill_movies()
+var = unseen_movies(1,785,rating_df,mean_df)
+print(var)
+
