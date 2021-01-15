@@ -1,83 +1,71 @@
-import pandas as pd 
-import tensorflow as tf
-import string
 import re
-from tensorflow.keras.preprocessing.text import one_hot
+import string
+import tqdm
+import pandas as pd 
+import numpy as np 
+import tensorflow as tf
+from tensorflow import keras 
+from keras import layers
+from keras.preprocessing.text import Tokenizer
+from sklearn.preprocessing import OneHotEncoder, LabelEncoder
+from tensorflow.keras.layers.experimental.preprocessing import TextVectorization
 from tensorflow.keras import Model, Sequential
 from tensorflow.keras.layers import Activation, Dense, Dot, Embedding, Flatten, GlobalAveragePooling1D, Reshape
-from tensorflow.keras.layers.experimental.preprocessing import TextVectorization
 
 movies_csv = pd.read_csv('movies.csv') 
-titles = movies_csv['title'].str.replace(r"\(.*\)","")
+rating_csv = pd.read_csv('ratings.csv')
+titles = movies_csv['title'].str.replace(r"\(.*\)","").to_list() 
+categories = movies_csv['genres'].str.split('|') 
+user_movies = rating_csv.loc[rating_csv['userId'] == 1, ['movieId']]
+user_ratings = rating_csv.loc[rating_csv['userId'] == 1, ['rating']]
+user_movies = user_movies['movieId'].values.tolist()
 
-print(titles)
+
+genre = set() 
+
+for category in categories:
+    for i in category:
+        genre.add(i.lower())
 
 
-def clear_sentences(data):
-    lowercase = tf.strings.lower(data)
-    return tf.strings.regex_replace(lowercase,
-            '[%s]' % re.escape(string.punctuation), '')
+for i in genre:
+    genre.remove(i)
+    cleared_genre = i.translate(str.maketrans('', '', string.punctuation)) 
+    genre.add(cleared_genre)
 
-vocab_size = 4069
-seq_len = 20
+words_list= [] 
+words = set()
+for sentece in titles:
+    sen = ''
+    words_in_sentence = sentece.split()
+    for i in words_in_sentence:
+        cleared_word = i.lower().translate(str.maketrans('', '', string.punctuation))
+        words.add(cleared_word)
+        sen = sen + ' ' + cleared_word
+
+    words_list.append(sen)
+
+words = list(words)
+
 
 vectorize_layer = TextVectorization(
-    standardize=clear_sentences(titles.values),
-    max_tokens=vocab_size,
-    output_mode='float',
-    output_sequence_length=seq_len)
-
-vectorize_layer.adapt(text_ds.batch(1024)) 
-inverse_vocab = vectorize_layer.get_vocabulary()
-print(inverse_vocab)
-
-def vectorize_text(text):
-  text = tf.expand_dims(text, -1)
-  return tf.squeeze(vectorize_layer(text))
-
-# Vectorize the data in text_ds.
-text_vector_ds = text_ds.batch(1024).prefetch(AUTOTUNE).map(vectorize_layer).unbatch()
+ max_tokens=len(words)+1,
+ output_mode='int',
+ output_sequence_length=32
+ )
 
 
-#import pandas as pd 
-###import tensorflow as tf
-##from tensorflow.keras.preprocessing.text import one_hot
-#import nltk
-#import gensim
-#
-##
-#df_clean = pd.DataFrame({'clean': titles})
-#sent = [row.split(',') for row in df_clean['clean']]
-#
-##print(sent)
-#
-#
-#model = gensim.models.Word2Vec(
-#        sent,
-#        size=100,
-#        window=5,
-#        min_count=1,
-#        workers=10,
-#        sg = 1,
-#        iter=10)
-#
-#
-#w1 = 'Postman'
-#print(model.wv.most_similar (positive=w1))
-#
-#
-#
-#
-##model = gensim.models.Word2Vec(titles.to_list(), size = 1000)
-#vocab = list(model.wv.vocab)
-##
-##print(vocab)
-##
-##
-##target = titles.pop()
-##print ( target )
-##
-##dataset = tf.data.Dataset.from_tensor_slices( titles.values )
-##
-##for feat in dataset.take(5):
-##    print(feat)
+vectorize_layer.adapt(words_list)
+
+model = tf.keras.models.Sequential()
+
+model.add(tf.keras.Input(shape=(1,), dtype=tf.string))
+
+model.add(vectorize_layer)
+
+
+input_data = [["toy "], ["the gay"]]
+
+
+print(model.predict(input_data))
+#print(vectorize_layer.get_vocabulary())
