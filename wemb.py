@@ -75,21 +75,38 @@ for i in categories_raw:
         one_hot_code = np.array(one_hot_code,int)
         bitwise_or_genre = np.bitwise_or(bitwise_or_genre,one_hot_code)
     onehot_dict[i] = list(bitwise_or_genre)
-#print(onehot_dict)
 
-#for i in range(0,len(combined_df)):
-#    final_vectors.append(allWordIndices[i])
-#    genres = categories[i]
-#    bitwise_or_genre = []
-#    bitwise_or_genre = np.zeros(len(genre),int)
-#    if len(genres)>1:
-#        for j in genres:
-#            j = j.lower().translate(str.maketrans('','',string.punctuation))
-#            one_hot_code = genre_dict[j]
-#            one_hot_code = np.array(one_hot_code,int)
-#            bitwise_or_genre = np.bitwise_or(bitwise_or_genre,one_hot_code)
-#        bitwise_or_genre=list(bitwise_or_genre) 
-#        final_vectors[i].extend(bitwise_or_genre) 
-#    else:
-#        one_hot_code = list(np.array(genre_dict[genres[0].lower().translate(str.maketrans('','',string.punctuation))],int))
-#        final_vectors[i].extend(one_hot_code)
+from elasticsearch import helpers, Elasticsearch
+import pandas as pd
+import requests
+import json
+
+def custom_search(es, url):
+
+    df = pd.read_csv('ratings.csv')
+    es.indices.refresh(index="movies")
+    print("Please insert your User ID: ", end = ' ')
+    uID = int(input())
+
+    print("Search for a movie: ", end = ' ')
+    query = {
+        "query": {
+            "match": {
+                # search against the 'title' field
+                'title': str(input())
+            }
+        }
+    }
+
+    response = requests.get(url, data=json.dumps(query), headers={
+                            'Content-Type': 'application/json'})
+    search_hits = json.loads(response.text)['hits']['hits']
+    rating_by_user = df.loc[(df['userId'] == uID)]
+    rating_result = {}
+    new_score = {}
+
+    for hit in search_hits:
+        es_movie_genre = hit['_source']['genres']
+        print( onehot_dict[es_movie_genre])
+custom_search(Elasticsearch(), 'http://localhost:9200/movies/_doc/_search')
+
