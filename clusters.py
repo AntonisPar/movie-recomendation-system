@@ -76,5 +76,5 @@ def unseen_movies(user_id, movie_id, ratings_with_clusters, mean_with_clusters):
         return float(ratings_with_clusters.loc[(ratings_with_clusters['userId'] == user_id) & (ratings_with_clusters['movieId'] == movie_id), ['rating']].values[0])
     elif (movie_id not in user_movies) and (movie_id in cluster_movies):
         return float(ratings_with_clusters.loc[(ratings_with_clusters['cluster'] == float(user_cluster)) & (ratings_with_clusters['movieId'] == movie_id), ['rating']].mean())
-    else:
+    else: 
         return 0 

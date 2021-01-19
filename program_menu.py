@@ -1,6 +1,7 @@
 from upload_data import upload_data
 from simple_search import search
 from custom_search import custom_search
+from wemb_model import create_model
 from clusters import *
 from elasticsearch import helpers, Elasticsearch
 
@@ -9,7 +10,7 @@ from elasticsearch import helpers, Elasticsearch
 es = Elasticsearch()  # CONNECT TO ELASTICSEARCH.
 url = 'http://localhost:9200/movies/_doc/_search'
 ratings_with_clusters, mean_with_clusters = create_clusters()
-
+tokens, onehot,model = create_model()
 
 def data_menu():
     print("Would you like to upload the Data to Elasticsearch? [y/N]", end=' ')
@@ -50,7 +51,7 @@ def search_menu():
 
 def custom_search_menu():
 
-    custom_search(es, url,ratings_with_clusters,mean_with_clusters)
+    custom_search(es, url,ratings_with_clusters,mean_with_clusters,tokens,onehot,model)
     print("Would you like to search for another movie? [y/N] ", end=' ')
 
     condition = False
@@ -58,7 +59,7 @@ def custom_search_menu():
         option = str(input()).lower()
 
         if(option == 'yes' or option == 'y'):
-            custom_search(es, url,ratings_with_clusters,mean_with_clusters)
+            custom_search(es, url,ratings_with_clusters,mean_with_clusters,tokens,onehot,model)
             print("Would you like to search for another movie? [y/N]", end=' ')
         elif(option == 'no' or option == 'n' or option == ''):
             condition = True
