@@ -1,3 +1,4 @@
+import os
 import numpy as np
 import pandas as pd
 from sklearn.cluster import KMeans
@@ -44,17 +45,21 @@ def create_mean_file():
 
         mean_file = mean_file.append(per_user_means, ignore_index=True)
 
-    mean_file.to_csv("mean.csv", index=False)
+    mean_file.to_csv("mean.csv", index=False) 
+    return mean_file
 
 def create_clusters():
 
-    mean_file = pd.read_csv('mean.csv').fillna(0)
+    if not os.path.exists('mean.csv'):
+        mean_file = create_mean_file().fillna(0)
+    else:
+        mean_file = pd.read_csv('mean.csv').fillna(0)
     ratings_df = pd.read_csv('ratings.csv')
     y = KMeans()
     mean_file['clusters'] = y.fit_predict(mean_file[genres[1:]])
     for id in range(1, user_ids + 1):
         ratings_df.loc[ratings_df['userId'] == id, 'cluster'] = int(
-            mean_file['clusters'].loc[mean_file['userId'] == id])
+        mean_file['clusters'].loc[mean_file['userId'] == id])
 
     return ratings_df, mean_file
 

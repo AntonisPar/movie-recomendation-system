@@ -10,7 +10,8 @@ from keras.preprocessing.text import Tokenizer
 from sklearn.preprocessing import OneHotEncoder, LabelEncoder
 from tensorflow.keras.layers.experimental.preprocessing import TextVectorization
 from tensorflow.keras import Model, Sequential
-from tensorflow.keras.layers import Activation, Dense, Dot, Embedding, Flatten, GlobalAveragePooling1D, Reshape
+from tensorflow.keras.layers import Activation, Dense, Dot, Embedding, Flatten, GlobalAveragePooling1D, Reshape 
+from tensorflow.python.util import deprecation
 
 def convert_text(text,words_to_token_dict):
     return [words_to_token_dict[word] for word in tf.keras.preprocessing.text.text_to_word_sequence(text)]
@@ -99,7 +100,7 @@ def create_model():
         words_to_token_dict[key] = value+1 
     
     if not os.path.exists('model_folder'):
-        print('Building Model. Please wait...')
+        print('\nBuilding Model. Please wait...')
         title_vectors = []
         
         for word in words_list:
@@ -168,7 +169,7 @@ def create_model():
             batch_size=256,
             validation_data=(x_val, y_val),
             epochs=5,
-            verbose=1
+            verbose=0
         )
         
         model.save('model_folder') 
@@ -181,7 +182,6 @@ def create_model():
 
 def predict_rating(userid, movie_title, genre, words_to_token_dict,onehot_dict,model):
 
-    #model = keras.models.load_model("model_folder")
     modified = []
     user_string = 'user' + str(userid)
     title = re.sub(r"\(.*\)", "", movie_title)
@@ -201,7 +201,3 @@ def predict_rating(userid, movie_title, genre, words_to_token_dict,onehot_dict,m
 
     return result[0][0] * 5
 
-
-#predicted_rating = predict_rating(
-#    7, 'Toy Story (123)', 'Adventure|Animation|Children|Comedy|Fantasy')
-#print(predicted_rating)

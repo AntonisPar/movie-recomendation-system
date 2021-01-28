@@ -2,7 +2,6 @@
 
 import os
 import json
-import os.path
 import pandas as pd
 from elasticsearch import helpers, Elasticsearch
 from progress.bar import FillingCirclesBar
@@ -16,12 +15,6 @@ settings_file = "settings.json" #SPECIFY THE PATH TO SETTINGS FILE.
 csv_file = "movies.csv" # SPECIFY THE PATH TO THE CSV FILE.
 
 #CHECKING IF FILE EXISTS.
-
-if os.path.isfile(csv_file):
-    pass
-else:
-    print ("Please move the movies.csv file in the current folder or type it here: ", end = ' ')
-    csv_file=input()
 
 if os.path.isfile(settings_file):
     with open(settings_file) as settings:

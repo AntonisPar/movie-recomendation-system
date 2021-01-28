@@ -37,13 +37,13 @@ def custom_search(es, url,ratings_with_clusters,mean_with_clusters,tokens,onehot
         rating = unseen_movies(user_id,es_movie_id,ratings_with_clusters,mean_with_clusters)
 
         if es_movie_id in df.loc[df['userId'] == user_id,['movieId']].values: 
-            score_calc = (0.25 * es_bm_score) + (0.5 * rating ) + (
-            0.25 * rating_by_movie['rating'].mean())
+            score_calc = (0.3 * es_bm_score) + (0.4 * rating ) + (
+            0.2 * rating_by_movie['rating'].mean())
             new_score[es_movie_title] = score_calc
 
         else:
-            score_calc = (0.15 * es_bm_score) + (0.5 * rating ) + (
-            0.25 * rating_by_movie['rating'].mean()) + ( 0.1 * round(predict_rating(user_id,es_movie_title,es_movie_genre,tokens,onehot,model),6) )
+            score_calc = (0.3 * es_bm_score) + (0.4 * rating ) + (
+            0.2 * rating_by_movie['rating'].mean()) + ( 0.1 * round(predict_rating(user_id,es_movie_title,es_movie_genre,tokens,onehot,model),6) )
             new_score[es_movie_title] = score_calc
              
 

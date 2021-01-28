@@ -1,19 +1,10 @@
-from upload_data import upload_data
-from simple_search import search
-from custom_search import custom_search
-from wemb_model import create_model
-from clusters import *
+import os 
 from elasticsearch import helpers, Elasticsearch
-
 #SOME SIMPLE MENU FUNCTIONS TO MAKE EXECUTION EASIER.
 
-es = Elasticsearch()  # CONNECT TO ELASTICSEARCH.
-url = 'http://localhost:9200/movies/_doc/_search'
-ratings_with_clusters, mean_with_clusters = create_clusters()
-tokens, onehot,model = create_model()
 
 def data_menu():
-    print("Would you like to upload the Data to Elasticsearch? [y/N]", end=' ')
+    print("\nWould you like to upload the Data to Elasticsearch? [y/N]", end=' ')
     condition = False
     while condition == False:
 
@@ -97,4 +88,19 @@ def start_menus():
                 condition = False 
         elif(option == 3): 
             condition = False
-start_menus()
+
+if os.path.exists('movies.csv') and os.path.exists('ratings.csv'):
+
+    from upload_data import upload_data
+    from simple_search import search
+    from custom_search import custom_search
+    from wemb_model import create_model
+    from clusters import *
+
+    es = Elasticsearch()  # CONNECT TO ELASTICSEARCH.
+    url = 'http://localhost:9200/movies/_doc/_search'
+    ratings_with_clusters, mean_with_clusters = create_clusters()
+    tokens, onehot,model = create_model()
+    start_menus()
+else:
+    print ("Please move the movies.csv and ratings.csv file in the program's  directory")
